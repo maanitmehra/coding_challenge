@@ -8,11 +8,59 @@
 // MACRO Definitions
 #define NUM_DIG 16
 
+// Defining Neurons 
+#define N1 2
+#define N2 2
+#define N3 1
+
+// Defining a 3 layer NN
+double **theta_1;	// weights for the 1st --> 2nd layer
+double **theta_2;	// weights for the 2nd --> 3rd layer
+
+//Defining the activation layers
+int* a1[N1+1];
+int* a2[N2+1];
+int* a3[N3];
+
+
+
+// x1	O | 	|Bias	0    |    |
+// x2	O |-----|A1	O    |----|Output O
+// Bias	0 |	|A2	O    |    |
+// -------      --------------    --------
+// Layer 1|	|Hidden Layer|	  |Layer 3
+
 // Function Declarations
+void initLayers(int*[], int);
+void initWts(int *[], int , int);
 float sig (float);
 void dec2bin(int, int, int*, int*);
 void matMul (int*[], int*[], int*[], int, int, int);
 bool isNumber(char *);
+void transpose(int *[], int* [], int, int);
+
+
+void initLayers(int * a[], int num_neurons)
+{
+	int neurons;
+	for (neurons = 0; neurons<num_neurons; neurons++ )
+	{
+		a[neurons] = (int *) malloc(NUM_DIG*sizeof(int));
+	}
+}
+
+void initWts (int* theta[], int rows, int cols)
+{
+	int i;
+	int j;
+	for (i=0; i<rows; i++)
+	{
+		for (j=0; j<cols; j++)
+		{
+			theta[i][j]=rand();
+		}
+	}
+}
 
 float sig(float n)
 {
@@ -22,6 +70,20 @@ float sig(float n)
 	
 	sigmoid = num / den ;
 	return sigmoid;
+}
+
+void transpose(int* in[], int* out[], int rows, int cols)
+{
+	int i;
+	int j;
+
+	for (i=0 ; i<rows; i++)
+	{
+		for (j=0 ; j<cols; j++)
+		{
+			out[j][i]=in[i][j];
+		} 
+	}
 }
 
 // Func used to determine whether input is a valid number or not
@@ -101,6 +163,10 @@ int main(int argc, char *argv[])
     	}
     else 
 	{
+
+	initLayers(a1, N1);
+	initLayers(a2, N2);
+	initLayers(a3, N3);
 	int a;
 	int b;
 
@@ -111,24 +177,20 @@ int main(int argc, char *argv[])
 		b = atoi(argv[2]);
 	}
 	else
-	{	
+	{
 		printf ("Incorrect inputs\n");
 		return 0;
 	}
 	// Output number
 	int c;
-/*
-	printf("Input two numbers\n");
-	printf("first number:\n");
-	scanf("%d",&a);
-	printf("second number:\n");
-	scanf("%d",&b);
-*/
+
 	// Defining temporary arrays to store the input numbers
 	int arr_a[NUM_DIG];
 	int arr_b[NUM_DIG];
 
 	dec2bin(a,b,arr_a,arr_b);
+
+// Testing section
 
 
 //*
@@ -193,6 +255,8 @@ int main(int argc, char *argv[])
 
 
 //****/
+
+
 
 	}
 	return 0;
