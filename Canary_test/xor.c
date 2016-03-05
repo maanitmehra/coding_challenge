@@ -7,15 +7,15 @@
 
 // MACRO Definitions
 #define NUM_DIG 16
-
+#define THRESH 0.5
 // Defining Neurons 
 #define N1 2
 #define N2 2
 #define N3 1
 
 // Defining a 3 layer NN
-double **theta_1;	// weights for the 1st --> 2nd layer
-double **theta_2;	// weights for the 2nd --> 3rd layer
+double *theta1[N1+1];	// weights for the 1st --> 2nd layer
+double *theta2[N2+1];	// weights for the 2nd --> 3rd layer
 
 //Defining the activation layers
 int* a1[N1+1];
@@ -23,7 +23,11 @@ int* a2[N2+1];
 int* a3[N3];
 
 
+// Nomenclature based on Andrew NG's Machine Learning Course (Coursera)
+// Activation Layers: a_{i}
+// Weights: Theta_{i}_{j}
 
+// -------      --------------    --------
 // x1	O | 	|Bias	0    |    |
 // x2	O |-----|A1	O    |----|Output O
 // Bias	0 |	|A2	O    |    |
@@ -32,25 +36,43 @@ int* a3[N3];
 
 // Function Declarations
 void initLayers(int*[], int);
-void initWts(int *[], int , int);
+void initLayersDbl(double*[], int);
+void initWts(double *[], int , int);
 float sig (float);
-void dec2bin(int, int, int*, int*);
-void matMul (int*[], int*[], int*[], int, int, int);
+void dec2bin(int, int*);
+int bin2dec(int*);
+void matMul (double*[], int*[], double*[], int, int, int);
 bool isNumber(char *);
 void transpose(int *[], int* [], int, int);
-
+void sigArr(double* [], int* [], int,int);
 
 void initLayers(int * a[], int num_neurons)
 {
 	int neurons;
-	for (neurons = 0; neurons<num_neurons; neurons++ )
+	for (neurons = 0; neurons<=num_neurons; neurons++ )
 	{
 		a[neurons] = (int *) malloc(NUM_DIG*sizeof(int));
 	}
 }
 
-void initWts (int* theta[], int rows, int cols)
+void initLayersDbl(double * a[], int num_neurons)
 {
+        int neurons;
+        for (neurons = 0; neurons<=num_neurons; neurons++ )
+        {
+                a[neurons] = (double *) malloc(NUM_DIG*sizeof(double));
+        }
+}
+
+
+void initWts (double* theta[], int rows, int cols)
+{
+	int r;
+	for (r=0;r<rows;r++)
+	{
+		theta[r]=(double*) malloc(cols*sizeof(double));
+	}
+
 	int i;
 	int j;
 	for (i=0; i<rows; i++)
@@ -93,7 +115,7 @@ bool isNumber(char number[])
     bool status = 1;
     //checking for negative numbers
     if (number[0] == '-')
-        i = 1;
+        return 0;
     for (; number[i] != 0; i++)
     {
         if (!isdigit(number[i]))
@@ -101,28 +123,41 @@ bool isNumber(char number[])
     }
     return 1;
 }
+
 // converting the decimal values to arrays for usage
-void dec2bin(int a, int b, int* arr_a, int* arr_b)
+void dec2bin(int a, int* arr_a)
 {
 	int i;
 
 	// Defining temporary variables	
 	int temp_a = a;
-	int temp_b = b;
 
 	// Converting the numbers to binary and storing 
 	// each digit in an array
-	for (i=0;i<=NUM_DIG;i++)
+	for (i=0;i<NUM_DIG;i++)
 	{
 		arr_a[i]= temp_a % 2;
-		arr_b[i]= temp_b % 2;
 		temp_a  = temp_a / 2;
-		temp_b  = temp_b / 2;
 	}
 }
 
+int bin2dec(int* arr)
+{
+        int i;
+	int sign=1;
+	int sum=0;
+        // Converting the numbers to binary and storing 
+        // each digit in an array
+        for (i=0;i<NUM_DIG;i++)
+        {
+		sum = sum + (arr[i]*pow(2, i));
+        }
+	return sum;
+}
+
+
 // Theta: (mxn); X: (nxp); Z(mxp)
-void matMul(int* theta[], int* X[], int* z[], int m, int n, int p)
+void matMul(double* theta[], int* X[], double* z[], int m, int n, int p)
 {
 	// i --> 0 to m
 	// k --> 0 to n
@@ -153,20 +188,61 @@ void matMul(int* theta[], int* X[], int* z[], int m, int n, int p)
 	}
 }
 
+void sigArr(double* in[], int* out[], int row,int col)
+{
+	int i;
+	int j;
+
+	for (i=0; i<row; i++)
+	{
+	   printf("\n");
+	   for (j=0;j<col; j++)
+	   {
+		printf("%.3f   ", sig(in[i][j]));
+		if (sig(in[i][j]) >=THRESH)
+		{
+			out[i][j]=1;
+		}
+		else 
+		{
+			out[i][j]=0;
+		}
+	   }
+	}
+}
+
+
 int main(int argc, char *argv[])
 {
 
     if ( argc != 3 ) // argc should be 3 for correct execution
     	{
-        /* We print argv[0] assuming it is the program name */
-        printf( "Correct usage: %s <input 1> <input 2>\n\n", argv[0] );
+        	/* We print argv[0] assuming it is the program name */
+        	printf( "Correct usage: %s <input 1> <input 2>\n\n", argv[0] );
     	}
-    else 
+   else 
 	{
-
+	// initializing the layers
 	initLayers(a1, N1);
 	initLayers(a2, N2);
 	initLayers(a3, N3);
+
+
+	// initializing the weights for each layer
+	initWts(theta1, N1+1, N2);
+	initWts(theta2, N2+1, N3);
+
+	theta1[0][0]=-10;
+        theta1[0][1]= 20;
+        theta1[0][2]= 20;
+        theta1[1][0]= 30;
+        theta1[1][1]=-20;
+        theta1[1][2]=-20;
+
+        theta2[0][0]=-30;
+        theta2[0][1]= 20;
+        theta2[0][2]= 20;
+
 	int a;
 	int b;
 
@@ -178,7 +254,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		printf ("Incorrect inputs\n");
+		printf ("Incorrect inputs. Inputs should be non-negative integers.\n");
 		return 0;
 	}
 	// Output number
@@ -188,21 +264,73 @@ int main(int argc, char *argv[])
 	int arr_a[NUM_DIG];
 	int arr_b[NUM_DIG];
 
-	dec2bin(a,b,arr_a,arr_b);
+	dec2bin(a,arr_a);
+	dec2bin(b,arr_b);
+	int idx;
 
-// Testing section
-
-
-//*
-	//Test code section
-	int num;
-	for (num =NUM_DIG-1; num >= 0; num--)
+	//Preparing activation Layer 1
+	for (idx=0;idx<NUM_DIG;idx++)
 	{
-		printf("%d",arr_a[num]);
+		a1[0][idx]=1;
+		a1[1][idx]=arr_a[idx];
+		a1[2][idx]=arr_b[idx];
 	}
+
+
+
+// Forward Propogation
+	int ro;
+	int co;
+	printf("\nPrinting a1:\n");
+        for (ro=0; ro<3;ro++)
+        {
+                printf("%dth row:\t", (ro+1));
+                for (co=0; co<16; co++)
+                {
+                        printf("%d  ",a1[ro][co]);
+                }
+                printf("\n");
+        }
+
+	double *out1[N2];
+	double *out2[N3];
+	int *h1[N2];
+	int *h2[N3];
+	initLayersDbl(out1, N2-1);
+	initLayersDbl(out2, N3-1);
+	initLayers(h1, N2-1);
+	initLayers(h2, N3-1);
+
+
+	matMul(theta1, a1, out1, N2, N1+1, NUM_DIG);
+	sigArr(out1, h1, N2, NUM_DIG);
+
+        for (idx=0;idx<NUM_DIG;idx++)
+        {
+                a2[0][idx]=1;
+                a2[1][idx]=h1[0][idx];
+                a2[2][idx]=h1[1][idx];
+        }
+
+	matMul(theta2, a2, out2, N3, N2+1, NUM_DIG);
+	sigArr(out2, h2, N3, NUM_DIG);
+
+	printf("Printing output...\n");
+	for (ro = 0; ro<1; ro++)
+	{
+		for (co=0;co <NUM_DIG; co++)
+		{
+			printf("%d",h2[ro][co]);
+		}
+		printf("\n");
+	}
+
+	printf("\nOutput:\t%d", bin2dec(h2[0]));
+	//Test code section
 	printf ("\nTest\n");
 
 	printf ("Testing sigmoid function\n");
+/*
 	
 	float sigm = sig(b);
 	printf("The number: %d, The sigmoid: %.5f\n", b, sigm);
@@ -254,7 +382,7 @@ int main(int argc, char *argv[])
         }
 
 
-//****/
+****/
 
 
 
