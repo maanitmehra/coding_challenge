@@ -195,10 +195,10 @@ void sigArr(double* in[], int* out[], int row,int col)
 
 	for (i=0; i<row; i++)
 	{
-	   printf("\n");
+//	   printf("\n");
 	   for (j=0;j<col; j++)
 	   {
-		printf("%.3f   ", sig(in[i][j]));
+//		printf("%.3f   ", sig(in[i][j]));
 		if (sig(in[i][j]) >=THRESH)
 		{
 			out[i][j]=1;
@@ -232,16 +232,16 @@ int main(int argc, char *argv[])
 	initWts(theta1, N1+1, N2);
 	initWts(theta2, N2+1, N3);
 
-	theta1[0][0]=-10;
-        theta1[0][1]= 20;
-        theta1[0][2]= 20;
-        theta1[1][0]= 30;
-        theta1[1][1]=-20;
-        theta1[1][2]=-20;
+	theta1[0][0]=-1;
+        theta1[0][1]= 2;
+        theta1[0][2]= 2;
+        theta1[1][0]= 3;
+        theta1[1][1]=-2;
+        theta1[1][2]=-2;
 
-        theta2[0][0]=-30;
-        theta2[0][1]= 20;
-        theta2[0][2]= 20;
+        theta2[0][0]=-3;
+        theta2[0][1]= 2;
+        theta2[0][2]= 2;
 
 	int a;
 	int b;
@@ -281,15 +281,15 @@ int main(int argc, char *argv[])
 	// Forward Propogation
 	int ro;
 	int co;
-	printf("\nPrinting a1:\n");
+//	printf("\nPrinting a1:\n");
         for (ro=0; ro<3;ro++)
         {
-                printf("%dth row:\t", (ro+1));
+//                printf("%dth row:\t", (ro+1));
                 for (co=0; co<16; co++)
                 {
-                        printf("%d  ",a1[ro][co]);
+//                        printf("%d  ",a1[ro][co]);
                 }
-                printf("\n");
+//                printf("\n");
         }
 
 	double *out1[N2];
@@ -315,21 +315,17 @@ int main(int argc, char *argv[])
 	matMul(theta2, a2, out2, N3, N2+1, NUM_DIG);
 	sigArr(out2, h2, N3, NUM_DIG);
 
-	printf("Printing output...\n");
+//	printf("Printing output...\n");
 	for (ro = 0; ro<1; ro++)
 	{
 		for (co=0;co <NUM_DIG; co++)
 		{
-			printf("%d",h2[ro][co]);
+//			printf("%d",h2[ro][co]);
 		}
-		printf("\n");
+//		printf("\n");
 	}
 
-	printf("\nOutput:\t%d", bin2dec(h2[0]));
-	//Test code section
-	printf ("\nTest\n");
-
-	printf ("Testing sigmoid function\n");
+	printf("%d XOR %d = %d\n",a,b ,bin2dec(h2[0]));
 
 
 	}
