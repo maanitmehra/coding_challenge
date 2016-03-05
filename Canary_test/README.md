@@ -11,4 +11,4 @@ If running on Ubuntu, execute as follows:
 >> returns: 12 XOR 10 = 6
 
 To enable Training, switch the variable from DISABLE to ENABLE in xor.c.
->> #define TRAINING_MODE DISABLE
+>> define TRAINING_MODE DISABLE
