@@ -278,7 +278,7 @@ int main(int argc, char *argv[])
 
 
 
-// Forward Propogation
+	// Forward Propogation
 	int ro;
 	int co;
 	printf("\nPrinting a1:\n");
@@ -330,64 +330,10 @@ int main(int argc, char *argv[])
 	printf ("\nTest\n");
 
 	printf ("Testing sigmoid function\n");
-/*
-	
-	float sigm = sig(b);
-	printf("The number: %d, The sigmoid: %.5f\n", b, sigm);
-	int i, j;
-	int m=3;
-	int n=2;
-	int p=2;
-	int *A[m];
-	int *B[n];
-	int *C[m];
-	// Creating array A
-	for (i=0; i<m;i++)
-	{
-		A[i]=(int*) malloc(n*sizeof(int));
-		C[i]=(int*) malloc(p*sizeof(int));
-	}
-	for (i=0; i<n; i++)
-	{
-		B[i]=(int*) malloc(p*sizeof(int));
-	}
-
-        for (i=0; i<m;i++)
-        {
-                for (j=0; j<n; j++)
-                {
-                        A[i][j] = j+i;
-                }
-        }
-
-
-        for (i=0; i<n;i++)
-        {
-                for (j=0; j<p; j++)
-                {
-                        B[i][j] = (j+1)*(i+1);
-                }
-        }
-
-	matMul(A,B,C,m,n,p);
-
-        for (i=0; i<m;i++)
-        {
-		printf("%d th row:", (i+1));
-                for (j=0; j<p; j++)
-                {
-                        printf("%d\t",C[i][j]);
-                }
-		printf("\n");
-        }
-
-
-****/
-
 
 
 	}
-	return 0;
+     return 0;
 }
 
 
