@@ -3,7 +3,9 @@
 Instructions to run:
 If running on Ubuntu, execute as follows:
 >> gcc -std=gnu99 -o xor -g xor.c -lm
+
 >> ./xor <num1> <num2>
+
 >> e.g. ./xor 12 10
 >>
 >> returns: 12 XOR 10 = 6
